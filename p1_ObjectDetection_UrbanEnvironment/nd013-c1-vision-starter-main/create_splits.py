@@ -7,8 +7,6 @@ import numpy as np
 
 from utils import get_module_logger
 
-from utils import get_module_logger
-
 
 def split(data_dir):
     """
