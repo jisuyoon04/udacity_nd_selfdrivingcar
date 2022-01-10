@@ -12,9 +12,9 @@ The data in the classroom workspace will be organized as follows:
     - contains the tf records in the Tf Object detection api format.
 
 /home/workspace/data/
-    - test: contain the test data (empty to start)
-    - train: contain the train data (empty to start)
-    - val: contain the val data (empty to start)
+    - test: contain the test data
+    - train: contain the train data
+    - val: contain the val data
 ```
 
 The experiments folder will be organized as follow:
@@ -121,32 +121,144 @@ Finally, you can create a video of your model's inferences for any tf record fil
 python inference_video.py -labelmap_path label_map.pbtxt --model_path training/experiment0/exported_model/saved_model --tf_record_path /home/workspace/data/test/tf.record --config_path training/experiment0/pipeline_new.config --output_path animation.mp4
 ```
 
-## Submission Template
+## Submission
 
-### Project overview
+### **Project overview**
 
-Object detection in an urban environment is a challenging task of self driving car system, since the cars must classify multiple objects in the field of view. This repository contains the first project of nanodegree program of Udacity Self Driving Car. In this project, tensorflow object detection API is used for detection of multiple object, such as cars, pedestrians and cyclists. The implementation uses the Waymo dataset, which can be downloaded from the [Google Cloud Storage Bucket](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files/). 
+Object detection in an urban environment is a challenging task of self driving car system, since the cars must classify multiple objects in the field of view. This repository contains the first project of nanodegree program of Udacity Self Driving Car. In this project, tensorflow object detection API is used for detection of multiple object, such as cars, pedestrians and cyclists based on the visual information. The implementation uses the Waymo dataset, which can be downloaded from the [Google Cloud Storage Bucket](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files/). 
 
-This project starts with an extensive data analysis including the computation of label distributions, display of sample images including bounding boxes, and checking for object occlusions.
+This project starts with an extensive data analysis including computation of label distributions, display of sample images including bounding boxes, and checking for object occlusions.
 
 This analysis is used for decision of meaningful augmentation of images for the project. Then, a pretrained neural network is trained to detect and classify multiple objects. The training results is monitored with TensorBoard. Based on the monitoring and recorded training and evaluation result, necessary steps for improvement of model performance are analyzed and conducted.
 
-### Set up
-This section should contain a brief description of the steps to follow to run the code for this repository.
+### **Set up**
 
-The results are created by using the Classroom Workspace. If local installation is planned, please follow the description in the section [Prerequisites](##Prerequisites).
+To use the project repository, GPU system should be available. Following analysis and results are produced by using Nvidia Geforce 1080 Ti in the local machine. If local installation is planned, you can follow either the description in the section [Prerequisites](##Prerequisites) or you can install the required python packages in your virtual environment by using [requirements.txt](./build/requirements.txt).
 
-### Dataset
+### **Dataset**
 #### Dataset analysis
-This section should contain a quantitative and qualitative description of the dataset. It should include images, charts and other visualizations.
+
+The waymo dataset includes information about bounding boxes for each image. The objects can be clearly visualized with those boxes and also labeling of classes is included in the dataset. In this study, we have vehicles, pedestrians and cyclists. The images show different scenes, such as different traffic situations, light condition (daytime or night) and also different weather condition. Due to the diverse circumstances, the images capture objects with different quality. Below you can see an example of image recorded in dark and few traffics on the road.
+
+![dark_image](./figures/p1_explore_data_analysis_01.png)
+
+On the other hand, as mentioned, some images have different classes, such as pedestrians marked with blue bounding boxes in the below image.
+
+![bright_diff_classes_image](./figures/p1_explore_data_analysis_04.png)
+
+The classification task for such different scenes requires a dataset with uniformly distributed classes. It helps the classifier to learn diverse features which are the key distinguishing different classes. However, the dataset analysis shows the imbalance of classes in the dataset. As depicted in the below figure, the amount of cyclists (green) is very small compared to the other labels. This might cause poor performance of classification of cyclists.
+
+![imbalance_classes](./figures/p1_Distribution_classes.png)
 
 #### Cross validation
-This section should detail the cross validation strategy and justify your approach.
+100 tfrecord files are used for training, testing and validaiton. First, the files are shuffled randomly. Random shuffling helps reducing imbalance of classes. Then, 70% of shuffled dataset is used for training, 20% is prepared for validation and 10% is splitted as test dataset to evaluate the model. The proportion ensures that sufficient data is available for training and validation. Once the training and validation are done, 10 percent of dataset is used for testing models. Furthermore, the split helps avoid overfitting of classifier.
 
-### Training 
+### **Training**
 #### Reference experiment
 This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
+
+In this study, the residual network model ([Resnet](http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz)) is taken as reference. The model is configured with randomly cropping images and is trained with the batch size of 4 and following optimizer setup is used:
+
+```
+optimizer {
+    momentum_optimizer {
+      learning_rate {
+        cosine_decay_learning_rate {
+          learning_rate_base: 0.04
+          total_steps: 25000
+          warmup_learning_rate: 0.013333
+          warmup_steps: 2000
+        }
+      }
+      momentum_optimizer_value: 0.9
+    }
+    use_moving_average: false
+  }
+```
+
+To analyze the training process, Tensorboard is used. Orange line indicates training loss of reference model and the red line shows the validation loss of reference model. Both losses tend to decrease, however the validation loss is much higher than training loss. This is a sign that the model is overfitting. 
+
+![Loss_reference](./figures/p1_Loss_reference.png)
+
+The performance of classifier model is evaluated by the metrics: Precision and Recall. They tend to increase, but the performance needs to be improved with appropriate measures. 
+
+![Precision_reference](./figures/p1_Precision_Reference.png)
+
+![Recall_reference](./figures/p1_Recall_Reference.png)
 
 #### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
  
+To improve on the baseline model, data augmentation is taken as measures to avoid overfitting problem and increase the classification performance. The rgb image is converted to grayscale with probability of 0.3:
+
+```
+  data_augmentation_options {
+    random_rgb_to_gray {
+    probability: 0.3
+    }
+  }
+```
+
+![Grayscale](./figures/p1_DataAugmentation_gray.png)
+
+To highlight objects on the image, the brightness is increased to 0.3.
+
+```
+  data_augmentation_options {
+    random_adjust_brightness {
+    max_delta: 0.3
+    }
+  }
+```
+
+Bright image:
+
+![Brightness](./figures/p1_DataAugmentation_bright.png)
+
+Dark image:
+
+![Dark](./figures/p1_DataAugmentation_dark.png)
+
+Furthermore, the contrast values are limited between 0.6 and 1.0 to highlight the lightning points.
+
+```
+  data_augmentation_options {
+    random_adjust_contrast {
+    min_delta: 0.6
+    max_delta: 1.0
+    }
+  }
+```
+
+The analysis is performed in the jupyter notebook "Explore augmentations.ipynb"
+
+After the data augmentation, the model is trained and evaluated. The results are depicted below:
+
+Training (blue) and validation loss (light blue) of experiment 01:
+
+![Loss_all](./figures/p1_Loss_all.png)
+
+Precision (light blue)
+
+![Precision_all](./figures/p1_Precision_all.png)
+
+Recall (light blue)
+![Recall_all](./figures/p1_Recall_all.png)
+
+Overall, the training and validation loss of augmented model are decreased in comparison with the losses of reference model. Better model performance is observed in the precison and recall curve. The model performance can be improved by using further measures, such as tuning optimization parameter or using other pretrained neural network as baseline.
+
+### **Additional**
+To obtain inference with an animated result and export the trained model, following command can be run:
+
+Export the trained model:
+```
+python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/experiment01/pipeline.config --trained_checkpoint_dir training/experiment01 --output_directory training/experiment01/exported_model/
+
+```
+
+Export animation
+
+```
+python inference_video.py --labelmap_path label_map.pbtxt --model_path training/experiment01/exported_model/saved_model --tf_record_path data/processed/test/tf.record --config_path training/experiment01/pipeline_new.config --output_path animation.gif
+```
+"tf.record" has to be replaced with the file you have in the test data.
