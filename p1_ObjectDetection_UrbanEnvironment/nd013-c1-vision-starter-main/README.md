@@ -232,7 +232,7 @@ Precision (light blue)
 Recall (light blue)
 ![Recall_all](./figures/p1_Recall_all.png)
 
-Overall, the training and validation loss of augmented model are decreased in comparison with the losses of reference model. Better model performance is observed in the precison and recall curve. The model performance can be improved by using further measures, such as tuning optimization parameter or using other pretrained neural network as baseline.
+Overall, the training and validation loss of augmented model are decreased in comparison with the losses of reference model. Better model performance is observed in the precison and recall curve. The model performance can be improved by using further measures, such as tuning optimization parameter or using other pretrained neural network as baseline. Moreover, the imbalance of classes has to be resolved by adding more samples of pedestrians and cyclists. The improvement of dataset plays an important role in the loss curves and bring better classification performance.
 
 ### **Additional - Creating an animation**
 To obtain inference with an animated result and export the trained model, following command can be run:
