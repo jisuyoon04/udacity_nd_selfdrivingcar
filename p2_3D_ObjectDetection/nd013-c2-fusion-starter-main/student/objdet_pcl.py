@@ -55,7 +55,7 @@ def show_pcl(pcl):
     
     # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
     global right_arrow
-    right_arrow = True
+    right_arrow = True #False
 
     def fct_right_arrow(vis_pcl):
         global right_arrow
@@ -119,7 +119,7 @@ def show_range_image(frame, lidar_name):
 
 
 # create birds-eye view of lidar data
-def bev_from_pcl(lidar_pcl, configs):
+def bev_from_pcl(lidar_pcl, configs, plot_vis):
 
     # remove lidar points outside detection area and with too low reflectivity
     mask = np.where((lidar_pcl[:, 0] >= configs.lim_x[0]) & (lidar_pcl[:, 0] <= configs.lim_x[1]) &
@@ -147,7 +147,8 @@ def bev_from_pcl(lidar_pcl, configs):
     lidar_pcl_cpy[:,1] = np.abs(lidar_pcl_cpy[:,1])
 
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
-    show_pcl(lidar_pcl_cpy)
+    if plot_vis:
+        show_pcl(lidar_pcl_cpy)
     
     #######
     ####### ID_S2_EX1 END #######     
@@ -179,9 +180,11 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 5 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
     img_intensity = intensity_map * 256
     img_intensity = img_intensity.astype(np.uint8)
-    cv2.imshow('img_intesity', img_intensity)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
+    if plot_vis:
+        cv2.imshow('img_intesity', img_intensity)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     #######
     ####### ID_S2_EX2 END ####### 
 
@@ -202,9 +205,11 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
     img_height = height_map * 256
     img_height = img_height.astype(np.uint8)
-    cv2.imshow('height_map', height_map)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
+    if plot_vis:
+        cv2.imshow('height_map', height_map)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     #######
     ####### ID_S2_EX3 END #######       
 
