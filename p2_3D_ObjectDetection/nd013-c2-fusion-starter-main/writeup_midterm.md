@@ -67,7 +67,7 @@ In file `loop_over_dataset.py`, set the attributes for code execution in the fol
     exec_visualization = ['show_range_image']
 
 #### Result:
-<img src= "/img/res_ID_S1_EX1.png">
+<img src= "img/res_ID_S1_EX1.png"/>
 
 ### 1.2 Visualize point-cloud
 The goal of this task is to use the Open3D library to display the lidar point-cloud in a 3d viewer in order to develop a feel for the nature of lidar point-clouds.
@@ -82,12 +82,12 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
     exec_visualization = ['show_pcl']
 
 #### Result:
-<img src= "/img/res_ID_S1_EX2_01.png">
-<img src= "/img/res_ID_S1_EX2_02.png">
-<img src= "/img/res_ID_S1_EX2_03.png">
-<img src= "/img/res_ID_S1_EX2_04.png">
-<img src= "/img/res_ID_S1_EX2_05.png">
-<img src= "/img/res_ID_S1_EX2_06.png">
+<img src= "img/res_ID_S1_EX2_01.png"/>
+<img src= "img/res_ID_S1_EX2_02.png"/>
+<img src= "img/res_ID_S1_EX2_03.png"/>
+<img src= "img/res_ID_S1_EX2_04.png"/>
+<img src= "img/res_ID_S1_EX2_05.png"/>
+<img src= "img/res_ID_S1_EX2_06.png"/>
 
 The lidar point cloud shows the chassis of cars as the most identifiable feature. The below images are set in different angles to find further features which might be useful for object detection. As mentioned in the instruction, the rear bumpers and tail lights are observed in the first picture. Further pictures show side mirrors, wheel and B and C pillars of vehicle body.
 
@@ -106,7 +106,7 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
     exec_visualization = []
 
 #### Result
-<img src= "/img/res_ID_S2_EX1.png">
+<img src= "img/res_ID_S2_EX1.png"/>
 
 ### 2.2 Compute intensity layer of bev-map (ID_S2_EX2)
 The goal of this task is to fill the "intensity" channel of the BEV map with data from the point-cloud. In order to do so, you will need to identify all points with the same (x,y)-coordinates within the BEV map and then assign the intensity value of the top-most lidar point to the respective BEV pixel. Please name the resulting list of points `lidar_pcl_top` as it will be re-used in later tasks. Also, you will need to normalize the resulting intensity image using percentiles, in order to make sure that the influence of outlier values (very bright and very dark regions) is sufficiently mitigated and objects of interest (e.g. vehicles) are clearly separated from the background.
@@ -121,7 +121,7 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
     exec_visualization = []
 
 #### Result
-<img src= "/img/res_ID_S2_EX2.png">
+<img src= "img/res_ID_S2_EX2.png"/>
 
 ### 2.3 Compute height layer of bev-map (ID_S2_EX3)
 The goal of this task is to fill the "height" channel of the BEV map with data from the point-cloud. In order to do so, please make use of the sorted and pruned point-cloud `lidar_pcl_top` from the previous task and normalize the height in each BEV map pixel by the difference between max. and min. height which is defined in the `configs` structure.
@@ -137,7 +137,7 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
     exec_visualization = []
 
 #### Result
-<img src= "/img/res_ID_S2_EX3.png">
+<img src= "img/res_ID_S2_EX3.png"/>
 
 ## Step 3: Model-based Object Detection in BEV Image
 
@@ -175,7 +175,7 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
     configs_det = det.load_configs(model_name=model)
 
 #### Result
-<img src= "/img/res_ID_S3_EX2.png">
+<img src= "img/res_ID_S3_EX2.png"/>
 
 ## Step 4: Performance Evaluation for Object Detection
 
@@ -204,7 +204,7 @@ Based on the pairings between ground-truth labels and detected objects, the goal
 Please use the settings of the previous task
 
 #### Result
-see values of variables `ious` and `center_devs` in the [code](/student/objdet_eval.py)
+see values of variables `det_performance` in the [code](/student/objdet_eval.py)
 
 ### 4.3 Compute precision and recall
 After processing all the frames of a sequence, the performance of the object detection algorithm shall now be evaluated. To do so in a meaningful way, the two standard measures "precision" and "recall" will be used, which are based on the accumulated number of positives and negatives from all frames.
@@ -225,8 +225,8 @@ In file loop_over_dataset.py, set the attributes for code execution in the follo
 
 `precision = 0.9506578947368421, recall = 0.9444444444444444`
 
-<img src= "/img/res_ID_S4_EX2_01.png">
+<img src= "img/res_ID_S4_EX2_01.png"/>
 
 To make sure that the code produces plausbile results, the flag `configs_det.use_labels_as_objects` should be set to True in a second run.
 
-<img src= "/img/res_ID_S4_EX2_02.png">
+<img src= "img/res_ID_S4_EX2_02.png"/>
