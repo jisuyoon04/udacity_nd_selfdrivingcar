@@ -63,7 +63,6 @@ class Filter:
                           [0,  q2, 0,  0,  q3, 0 ],
                           [0,  0,  q2, 0,  0,  q3]])
 
-        return np.matrix(Q)
         
         ############
         # END student code
