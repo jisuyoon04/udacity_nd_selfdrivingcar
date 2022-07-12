@@ -1,7 +1,14 @@
+# ignore directories
 *__pycache__
 *.ipynb_checkpoints/
 *venv_
 *training
+*pretrained
+*models
+*results
+
+
+# ignore files
 *.index
 *.zip
-*pretrained
+
